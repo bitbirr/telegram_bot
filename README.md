@@ -1,18 +1,46 @@
-birbitt-api/
-│
-├── server.js         // Entry point for the Express server
-├── config.js         // Configuration for DB connection
-├── .env              // Environment variables
-├── models/           // Database models
-│   ├── userModel.js  // User data model
-│   └── transactionModel.js // Transaction data model
-├── routes/           // API route handlers
-│   ├── userRoutes.js // User related routes
-│   └── transactionRoutes.js // Transaction related routes
-└── dialog.json       // JSON flow configuration
 
-1. Handle user registration and management.
-2. Manage buy/sell orders.
-3. Check current exchange rates.
-4. Retrieve transaction history.
-5. Provide help and FAQs.
+# BitBirr Telegram Bot
+
+Telegram bot using Node.js and a MySQL database.
+
+
+
+
+
+## Authors
+
+- [@bitbirr](https://www.github.com/bitbirr)
+
+
+## Badges
+
+Add badges from somewhere like: [shields.io](https://shields.io/)
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
+
+
+## Deployment
+
+To deploy this project run
+
+```bash
+  npm run deploy
+```
+
+
+## Features
+
+- Verify users using phone number and KYC if required.
+- Allow users to see current exchange rates (ETB ↔ USDT/BTC).
+- Let users place buy/sell orders with confirmation steps.
+- Notify admin of pending orders.
+- Support payment instructions for bank transfer, Telebirr, and Chapa.
+- Provide transaction history on request.
+- Offer basic support and FAQs.
+- Be fast, secure, and support Amharic and English.
+
+
+![Logo](https://bitbirr.net/wp-content/uploads/2025/05/BitBirr-logo.jpg)
+
