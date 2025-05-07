@@ -1,0 +1,82 @@
+{
+    "language_selection": {
+        "message": "Welcome to BirBitt! Please select your language:",
+        "options": {
+            "1": "English",
+            "2": "Amharic"
+        },
+        "next_step": "otp_verification"
+    },
+    "main_menu": {
+        "message": "What would you like to do?",
+        "options": {
+            "1": "Buy Crypto",
+            "2": "Sell Crypto",
+            "3": "Check Rates",
+            "4": "Transaction History",
+            "5": "Help & FAQ"
+        },
+        "next_steps": {
+            "1": "buy_crypto",
+            "2": "sell_crypto",
+            "3": "check_rates",
+            "4": "transaction_history",
+            "5": "help_faq"
+        }
+    },
+    "buy_crypto": {
+        "message": "Which crypto do you want to buy?",
+        "options": {
+            "1": "USDT",
+            "2": "BTC"
+        },
+        "follow_up": "payment_method"
+    },
+    "sell_crypto": {
+        "message": "Which crypto do you want to sell?",
+        "options": {
+            "1": "USDT",
+            "2": "BTC"
+        },
+        "follow_up": "payment_method"
+    },
+    "check_rates": {
+        "message": "Today's rates:\n1 USDT = X ETB\n1 BTC = Y ETB\nWould you like to buy or sell now?",
+        "options": {
+            "1": "Buy",
+            "2": "Sell",
+            "3": "Return to Menu"
+        },
+        "next_steps": {
+            "1": "buy_crypto",
+            "2": "sell_crypto",
+            "3": "main_menu"
+        }
+    },
+    "transaction_history": {
+        "message": "Here are your last 5 transactions:\n[Auto-fetch user history]",
+        "next_step": "main_menu"
+    },
+    "help_faq": {
+        "message": "Help Topics:\n1. How to Buy/Sell\n2. Payment Methods\n3. Contact Support",
+        "next_step": "main_menu"
+    },
+    "otp_verification": {
+        "message": "For your security, please verify your phone number. Enter the 6-digit OTP.",
+        "next_step": "main_menu"
+    },
+    "payment_method": {
+        "message": "Please choose a payment method to proceed:",
+        "options": {
+            "1": "Telebirr",
+            "2": "EBirr (Kaafi)",
+            "3": "Bank Deposit (CBE)",
+            "4": "Bank Deposit (Abyssinia Bank)"
+        },
+        "follow_up": "payment_proof"
+    },
+    "payment_proof": {
+        "message": "Please enter your payment transaction number and upload a screenshot if available.",
+        "next_step": "main_menu"
+    }
+}
