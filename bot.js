@@ -1,80 +1,128 @@
-const TelegramBot = require('node-telegram-bot-api');
-const db = require('./config');
-const dialog = require('./dialog.json');
+const { Telegraf } = require('telegraf');
+const mysql = require('mysql2/promise');
+const fetch = require('node-fetch');
 require('dotenv').config();
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+const db = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+});
 
-// Function to send notifications to users
-const sendNotification = (chatId, message) => {
-    bot.sendMessage(chatId, message).catch(err => {
-        console.error('Error sending notification:', err);
-    });
+// Load dialog from JSON
+const dialog = require('./dialog.json');
+
+// Fetch currency rates from CoinGecko
+const fetchCurrencyRates = async () => {
+    const response = await fetch(process.env.COINGECKO_API);
+    const data = await response.json();
+    return data;
 };
 
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    db.query('INSERT IGNORE INTO users (telegram_id) VALUES (?)', [chatId], (err) => {
-        if (err) {
-            console.error('Error inserting user:', err);
-            return;
+// Helper function to update user session
+const updateCurrentStep = async (userId, step) => {
+    await db.query('INSERT INTO user_sessions (user_id, current_step) VALUES (?, ?) ON DUPLICATE KEY UPDATE current_step = ?', [userId, step, step]);
+};
+
+// Start command
+bot.command('start', async (ctx) => {
+    const phone = ctx.message.from.id; // Use Telegram ID for simplicity
+    await db.query('INSERT INTO users (phone_number) VALUES (?) ON DUPLICATE KEY UPDATE phone_number = ?', [phone, phone]);
+    await updateCurrentStep(phone, 'language_selection');
+    ctx.reply(dialog.language_selection.message, {
+        reply_markup: {
+            keyboard: [
+                [{ text: 'English' }, { text: 'Amharic' }]
+            ],
+            one_time_keyboard: true,
+            resize_keyboard: true
         }
-        bot.sendMessage(chatId, dialog.language_selection.message, {
-            reply_markup: {
-                keyboard: [["1 - English"], ["2 - Amharic"]],
-                one_time_keyboard: true
-            }
-        });
     });
 });
 
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
+// Handle language selection
+bot.on('text', async (ctx) => {
+    const step = await getUserCurrentStep(ctx.message.from.id);
+    
+    if (step === 'language_selection') {
+        const selectedLanguage = ctx.message.text.toLowerCase();
+        if (['english', 'amharic'].includes(selectedLanguage)) {
+            await db.query('UPDATE users SET language = ? WHERE phone_number = ?', [selectedLanguage, ctx.message.from.id]);
+            await updateCurrentStep(ctx.message.from.id, 'otp_verification');
+            ctx.reply(dialog.otp_verification.message);
+        } else {
+            ctx.reply('Please select a valid language');
+        }
+    }
+    else if (step === 'otp_verification') {
+        const otp = generateOTP(); // Generate your OTP logic
+        // Store OTP securely and send it to the user (Send through Telegram or another secure way)
+        ctx.reply(`Your OTP is: ${otp}. Please verify it.`);
+        // Store OTP in the database
+        await updateCurrentStep(ctx.message.from.id, 'verify_otp');
+    }
+    else if (step === 'verify_otp') {
+        // Assuming OTP verification logic is implemented
+        if (ctx.message.text === correctOTP) {
+            await db.query('UPDATE users SET kyc_verified = TRUE WHERE phone_number = ?', [ctx.message.from.id]);
+            await updateCurrentStep(ctx.message.from.id, 'main_menu');
+            ctx.reply('Your account has been verified! Type /menu to access main options.');
+        } else {
+            ctx.reply('Invalid OTP. Please try again.');
+        }
+    }
+    // Other flow logic based on dialog structure...
+});
 
-    // Set the language and handle user state
-    if (msg.text.includes("English") || msg.text.includes("Amharic")) {
-        const language = msg.text.includes("English") ? "en" : "am";
-        db.query('UPDATE users SET language=? WHERE telegram_id=?', [language, chatId], (err) => {
-            if (err) {
-                console.error('Error updating language:', err);
-            }
-        });
-        bot.sendMessage(chatId, dialog.main_menu.message, {
+// Example to show main menu
+bot.command('menu', async (ctx) => {
+    const step = await getUserCurrentStep(ctx.message.from.id);
+    if (step === 'main_menu') {
+        ctx.reply(dialog.main_menu.message, {
             reply_markup: {
-                keyboard: [["1 - Buy Crypto"], ["2 - Sell Crypto"], ["3 - Check Rates"], ["4 - Transaction History"], ["5 - Help & FAQ"]],
+                keyboard: [
+                    [{ text: 'Buy Crypto' }, { text: 'Sell Crypto' }, { text: 'Check Rates' }],
+                    [{ text: 'Transaction History' }, { text: 'Help & FAQ' }]
+                ],
                 one_time_keyboard: true
             }
         });
-        return;
+        await updateCurrentStep(ctx.message.from.id, 'main_menu');
     }
+});
 
-    // Handle main menu options
-    if (msg.text.includes("Buy Crypto")) {
-        db.query('UPDATE users SET current_action=? WHERE telegram_id=?', ['buy_crypto', chatId], (err) => {
-            if (err) {
-                console.error('Error setting current action:', err);
-            }
-        });
-        bot.sendMessage(chatId, dialog.buy_crypto.message, {
+// Handle Buy/Sell
+bot.on('text', async (ctx) => {
+    const step = await getUserCurrentStep(ctx.message.from.id);
+    if (step === 'buy_crypto') {
+        ctx.reply(dialog.buy_crypto.message, {
             reply_markup: {
-                keyboard: [["1 - USDT"], ["2 - BTC"]],
+                keyboard: [
+                    [{ text: 'USDT' }, { text: 'BTC' }]
+                ],
                 one_time_keyboard: true
             }
         });
-        return;
-    }
-
-    // Assume here we have mechanisms to process payment and confirm order
-    if (msg.text.includes("Confirm Order")) {
-        // This would be the logic to save an order
-        // After saving the order, send a notification
-        sendNotification(chatId, "Your order has been confirmed successfully!");
-        return;
-    }
-
-    // Other handling for selling, checking rates, etc.
+        await updateCurrentStep(ctx.message.from.id, 'payment_method');
+    } 
+    // Add further flow logic for each option users can select...
 
 });
 
-// Implement the rest of the bot logic including payment methods, transaction history, etc.
+// Get Current User Step
+const getUserCurrentStep = async (userId) => {
+    const [rows] = await db.query('SELECT current_step FROM user_sessions WHERE user_id = ?', [userId]);
+    return rows.length > 0 ? rows[0].current_step : null;
+};
+
+// Generate OTP Function
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
+
+// Start the bot
+bot.launch().then(() => {
+    console.log('Bot is running...');
+}).catch((err) => {
+    console.error('Failed to launch bot:', err);
+});

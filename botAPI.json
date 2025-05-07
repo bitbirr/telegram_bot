@@ -1,0 +1,52 @@
+{
+    "info": {
+        "_postman_id": "12345678-abcd-efgh-ijkl-123456789012",
+        "name": "BirBitt Bot Testing",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Start Command",
+            "request": {
+                "url": "{{baseUrl}}/start",
+                "method": "GET",
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "header": [],
+                "description": "Start the bot and initiate the dialog"
+            },
+            "response": []
+        },
+        {
+            "name": "Menu Command",
+            "request": {
+                "url": "{{baseUrl}}/menu",
+                "method": "GET",
+                "body": {
+                    "mode": "raw",
+                    "raw": ""
+                },
+                "header": [],
+                "description": "Get the main menu options"
+            },
+            "response": []
+        },
+        {
+            "name": "Verify OTP",
+            "request": {
+                "url": "{{baseUrl}}/verifyOtp",
+                "method": "POST",
+                "body": {
+                    "mode": "raw",
+                    "raw": "{ \"otp\": \"123456\" }"
+                },
+                "header": [],
+                "description": "Validate the user OTP"
+            },
+            "response": []
+        }
+        
+    ]
+}
