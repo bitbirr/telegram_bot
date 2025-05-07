@@ -1,0 +1,27 @@
+{
+  "name": "telegram_bot",
+  "version": "1.0.0",
+  "description": "birbitt-api/\r │\r ├── server.js         // Entry point for the Express server\r ├── config.js         // Configuration for DB connection\r ├── .env              // Environment variables\r ├── models/           // Database models\r │   ├── userModel.js  // User data model\r │   └── transactionModel.js // Transaction data model\r ├── routes/           // API route handlers\r │   ├── userRoutes.js // User related routes\r │   └── transactionRoutes.js // Transaction related routes\r └── dialog.json       // JSON flow configuration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitbirr/telegram_bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bitbirr/telegram_bot/issues"
+  },
+  "homepage": "https://github.com/bitbirr/telegram_bot#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1"
+  }
+}

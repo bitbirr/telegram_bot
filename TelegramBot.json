@@ -1,0 +1,92 @@
+{
+    "info": {
+        "_postman_id": "b8c890e5-949d-4f6e-919e-397763ec9a49",
+        "name": "BirBitt Bot API",
+        "description": "API endpoints for the BirBitt Telegram Bot",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Create or Find User",
+                    "request": {
+                        "url": "http://localhost:3000/api/users",
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"telegramId\": \"USER_TELEGRAM_ID\"}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User Language",
+                    "request": {
+                        "url": "http://localhost:3000/api/users/language",
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"telegramId\": \"USER_TELEGRAM_ID\", \"language\": \"en\"}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User by Telegram ID",
+                    "request": {
+                        "url": "http://localhost:3000/api/users/{{telegramId}}",
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Transaction Management",
+            "item": [
+                {
+                    "name": "Create a New Transaction",
+                    "request": {
+                        "url": "http://localhost:3000/api/transactions",
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"userId\": \"USER_TELEGRAM_ID\", \"amount\": 100, \"currency\": \"USDT\"}"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Transaction History",
+                    "request": {
+                        "url": "http://localhost:3000/api/transactions/{{userId}}",
+                        "method": "GET",
+                        "header": []
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}
